@@ -280,9 +280,10 @@ if osver == "Darwin":
 
 		activate_venv()
 
-		if not is_ios():
-			subprocess.run([sys.executable, "-mensurepip"], cwd=venv_path)
-			subprocess.run([sys.executable, "-mpip", "install", "pyfatfs"], cwd=venv_path)
+		# TODO: This likely won't work, find proper fix
+		#if not is_ios():
+		#	subprocess.run([sys.executable, "-mensurepip"], cwd=venv_path)
+		#	subprocess.run([sys.executable, "-mpip", "install", "pyfatfs"], cwd=venv_path)
 
 	if "VIRTUAL_ENV" not in os.environ:
 		if os.path.exists(venv_py):
