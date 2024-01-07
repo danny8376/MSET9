@@ -250,30 +250,39 @@ if osver == "Darwin":
 		os.environ["VIRTUAL_ENV"] = venv_path
 		os.environ["VIRTUAL_ENV_PROMPT"] = "(mset9)"
 
-		#if systmp is None:
-		#	os.execlp(py_exec, venv_py, __file__, device)
-		#else:
-		#	os.execlp(py_exec, venv_py, __file__, device, systmp)
-
-		prev_length = len(sys.path)
-		ver = sys.version_info
-		ver_path = f"python{ver.major}.{ver.minor}"
-		path = os.path.realpath(os.path.join(venv_path, "lib", ver_path, "site-packages"))
-		site.addsitedir(path)
-		sys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]
-		sys.real_prefix = sys.prefix
-		sys.prefix = venv_path
+		if is_ios():
+			if systmp is None:
+				os.execlp(venv_py, venv_py, __file__, device)
+			else:
+				os.execlp(venv_py, venv_py, __file__, device, systmp)
+		else:
+			prev_length = len(sys.path)
+			ver = sys.version_info
+			ver_path = f"python{ver.major}.{ver.minor}"
+			path = os.path.realpath(os.path.join(venv_path, "lib", ver_path, "site-packages"))
+			site.addsitedir(path)
+			sys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]
+			sys.real_prefix = sys.prefix
+			sys.prefix = venv_path
 
 	def setup_venv():
+		global venv_path, venv_bin, venv_py
 		import venv, subprocess
 		if "VIRTUAL_ENV" not in os.environ:
 			if os.path.exists(venv_bin):
 				import shutil
 				shutil.rmtree(venv_bin)
 			venv.create(venv_path, with_pip=True)
-		subprocess.run([venv_py, "-mensurepip"], cwd=venv_path)
-		subprocess.run([venv_py, "-mpip", "install", "pyfatfs"], cwd=venv_path)
+
+		if is_ios():
+			subprocess.run([venv_py, "-mensurepip"], cwd=venv_path)
+			subprocess.run([venv_py, "-mpip", "install", "pyfatfs"], cwd=venv_path)
+
 		activate_venv()
+
+		if not is_ios():
+			subprocess.run([sys.executable, "-mensurepip"], cwd=venv_path)
+			subprocess.run([sys.executable, "-mpip", "install", "pyfatfs"], cwd=venv_path)
 
 	if "VIRTUAL_ENV" not in os.environ:
 		if os.path.exists(venv_py):
