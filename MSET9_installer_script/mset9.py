@@ -466,6 +466,9 @@ if osver == "Darwin":
 			prbad("Error 15: Not FAT32 formatted or corrupted filesystem.")
 			prinfo("Please ensure your SD card is properly formatted")
 			prinfo("Consult: https://wiki.hacks.guide/wiki/Formatting_an_SD_card")
+		else:
+			prbad("Error #: Unknown PyFAT excpetion")
+			prinfo(msg)
 		#tmp_cleanup()
 		exitOnEnter()
 
